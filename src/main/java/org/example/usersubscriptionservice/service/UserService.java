@@ -1,12 +1,12 @@
 package org.example.usersubscriptionservice.service;
 
-import org.example.usersubscriptionservice.dto.UserDTO;
+import org.example.usersubscriptionservice.dto.UserCreateDTO;
+import org.example.usersubscriptionservice.dto.UserResponseDTO;
 import org.example.usersubscriptionservice.entity.UserEntity;
 import org.example.usersubscriptionservice.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,28 +24,30 @@ public class UserService {
         this.modelMapper = modelMapper;
     }
 
-    public UserDTO createUser(UserDTO userDTO) {
-        logger.info("Creating new user with email: {}", userDTO.getEmail());
-        UserEntity user = modelMapper.map(userDTO, UserEntity.class);
+    public UserResponseDTO createUser(UserCreateDTO userCreateDTO) {
+        logger.info("Creating new user with email: {}", userCreateDTO.getEmail());
+        UserEntity user = new UserEntity();
+        user.setName(userCreateDTO.getName());
+        user.setEmail(userCreateDTO.getEmail());
         UserEntity savedUser = userRepository.save(user);
-        return modelMapper.map(savedUser, UserDTO.class);
+        return modelMapper.map(savedUser, UserResponseDTO.class);
     }
 
-    public UserDTO getUserById(Long id) {
+    public UserResponseDTO getUserById(Long id) {
         logger.info("Fetching user with id: {}", id);
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return modelMapper.map(user, UserDTO.class);
+        return modelMapper.map(user, UserResponseDTO.class);
     }
 
-    public UserDTO updateUser(Long id, UserDTO userDTO) {
+    public UserResponseDTO updateUser(Long id, UserResponseDTO userResponseDTO) {
         logger.info("Updating user with id: {}", id);
         UserEntity existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        modelMapper.map(userDTO, existingUser);
+        modelMapper.map(userResponseDTO, existingUser);
         UserEntity updatedUser = userRepository.save(existingUser);
-        return modelMapper.map(updatedUser, UserDTO.class);
+        return modelMapper.map(updatedUser, UserResponseDTO.class);
     }
 
     public void deleteUser(Long id) {
@@ -53,10 +55,10 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public List<UserDTO> getAllUsers() {
+    public List<UserResponseDTO> getAllUsers() {
         logger.info("Fetching all users");
         return userRepository.findAll().stream()
-                .map(user -> modelMapper.map(user, UserDTO.class))
+                .map(user -> modelMapper.map(user, UserResponseDTO.class))
                 .collect(Collectors.toList());
     }
 }

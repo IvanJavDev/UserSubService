@@ -1,12 +1,13 @@
 package org.example.usersubscriptionservice.controller;
 
-import org.example.usersubscriptionservice.dto.UserDTO;
+import org.example.usersubscriptionservice.dto.UserCreateDTO;
+import org.example.usersubscriptionservice.dto.UserResponseDTO;
 import org.example.usersubscriptionservice.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -20,26 +21,26 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> CreateUser(@RequestBody UserDTO userDTO) {
-        UserDTO createdUser = userService.createUser(userDTO);
+    public ResponseEntity<UserResponseDTO> CreateUser(@RequestBody UserCreateDTO userCreateDTO) {
+        UserResponseDTO createdUser = userService.createUser(userCreateDTO);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> GetUserById(@PathVariable long id) {
-        UserDTO userDTO = userService.getUserById(id);
-        return ResponseEntity.ok(userDTO);
+    public ResponseEntity<UserResponseDTO> GetUserById(@PathVariable long id) {
+        UserResponseDTO userResponseDTO = userService.getUserById(id);
+        return ResponseEntity.ok(userResponseDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        UserDTO updatedUser = userService.updateUser(id, userDTO);
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @RequestBody UserResponseDTO userResponseDTO) {
+        UserResponseDTO updatedUser = userService.updateUser(id, userResponseDTO);
         return ResponseEntity.ok(updatedUser);
 
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(Map.of("message", "User deleted", "id", id.toString()));
     }
 }

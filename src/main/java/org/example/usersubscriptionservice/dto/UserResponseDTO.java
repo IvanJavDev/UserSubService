@@ -5,9 +5,9 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class UserDTO {
+public class UserResponseDTO {
     private Long id;
     private String name;
     private String email;
-    private List<SubscriptionDTO> subscriptions;
+    private List<SubscriptionResponseDTO> subscriptions;
 }

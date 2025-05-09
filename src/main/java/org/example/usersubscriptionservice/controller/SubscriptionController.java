@@ -1,6 +1,8 @@
 package org.example.usersubscriptionservice.controller;
 
-import org.example.usersubscriptionservice.dto.SubscriptionDTO;
+import org.example.usersubscriptionservice.dto.SubscriptionCreateDTO;
+import org.example.usersubscriptionservice.dto.SubscriptionResponseDTO;
+import org.example.usersubscriptionservice.dto.SubscriptionStatsDTO;
 import org.example.usersubscriptionservice.service.SubscriptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,16 +23,16 @@ public class SubscriptionController {
     }
 
     @PostMapping
-    public ResponseEntity<SubscriptionDTO> addSubscription(
+    public ResponseEntity<SubscriptionResponseDTO> addSubscription(
             @PathVariable Long userId,
-            @RequestBody SubscriptionDTO subscriptionDTO) {
-        SubscriptionDTO createdSubscription = subscriptionService.addSubscription(userId, subscriptionDTO);
+            @RequestBody SubscriptionCreateDTO subscriptionCreateDTO) {
+        SubscriptionResponseDTO createdSubscription = subscriptionService.addSubscription(userId, subscriptionCreateDTO);
         return new ResponseEntity<>(createdSubscription, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<SubscriptionDTO>> getUserSubscriptions(@PathVariable Long userId) {
-        List<SubscriptionDTO> subscriptions = subscriptionService.getUserSubscriptions(userId);
+    public ResponseEntity<List<SubscriptionResponseDTO>> getUserSubscriptions(@PathVariable Long userId) {
+        List<SubscriptionResponseDTO> subscriptions = subscriptionService.getUserSubscriptions(userId);
         return ResponseEntity.ok(subscriptions);
     }
 
@@ -54,8 +56,8 @@ class TopSubscriptionsController {
     }
 
     @GetMapping("/top")
-    public ResponseEntity<List<Object[]>> getTop3PopularSubscriptions() {
-        List<Object[]> topSubscriptions = subscriptionService.getTop3PopularSubscriptions();
+    public ResponseEntity<List<SubscriptionStatsDTO>> getTop3PopularSubscriptions() {
+        List<SubscriptionStatsDTO> topSubscriptions = subscriptionService.getTop3PopularSubscriptions();
         return ResponseEntity.ok(topSubscriptions);
     }
 }
