@@ -3,6 +3,7 @@ package org.example.usersubscriptionservice.service;
 import org.example.usersubscriptionservice.dto.UserCreateDTO;
 import org.example.usersubscriptionservice.dto.UserResponseDTO;
 import org.example.usersubscriptionservice.entity.UserEntity;
+import org.example.usersubscriptionservice.exceptions.UserNotFoundExeption;
 import org.example.usersubscriptionservice.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -36,14 +37,14 @@ public class UserService {
     public UserResponseDTO getUserById(Long id) {
         logger.info("Fetching user with id: {}", id);
         UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundExeption("User not found"));
         return modelMapper.map(user, UserResponseDTO.class);
     }
 
     public UserResponseDTO updateUser(Long id, UserResponseDTO userResponseDTO) {
         logger.info("Updating user with id: {}", id);
         UserEntity existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundExeption("User not found"));
 
         modelMapper.map(userResponseDTO, existingUser);
         UserEntity updatedUser = userRepository.save(existingUser);

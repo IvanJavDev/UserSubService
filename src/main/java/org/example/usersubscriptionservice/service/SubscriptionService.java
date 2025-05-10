@@ -7,6 +7,8 @@ import org.example.usersubscriptionservice.entity.SubscriptionEntity;
 import org.example.usersubscriptionservice.entity.UserEntity;
 import org.example.usersubscriptionservice.enums.SubscriptionType;
 import org.example.usersubscriptionservice.exceptions.BusinessValidationException;
+import org.example.usersubscriptionservice.exceptions.SubscriptionConflictException;
+import org.example.usersubscriptionservice.exceptions.UserNotFoundExeption;
 import org.example.usersubscriptionservice.repository.SubscriptionRepository;
 import org.example.usersubscriptionservice.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -36,7 +38,7 @@ public class SubscriptionService {
     public SubscriptionResponseDTO addSubscription(Long userId, SubscriptionCreateDTO subscriptionCreateDTO) {
         logger.info("Adding subscription for user with id: {}", userId);
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundExeption("User not found"));
 
         boolean subscriptionExists = subscriptionRepository.existsByUserIdAndServiceTypeAndIsActiveTrue(
                 userId,
@@ -71,7 +73,7 @@ public class SubscriptionService {
             case QUARTERLY -> now.plusMonths(3).withHour(23).withMinute(59).withSecond(59);
             case ANNUAL -> now.plusYears(1).withHour(23).withMinute(59).withSecond(59);
             case LIFETIME -> LocalDateTime.MAX;
-            default -> throw new IllegalArgumentException(
+            default -> throw new BusinessValidationException(
                     String.format("Unknown subscription type: '%s'. Supported types: MONTHLY, QUARTERLY, ANNUAL, BIANNUAL, TRIAL, LIFETIME",
                             subscriptionType)
             );
@@ -92,7 +94,7 @@ public class SubscriptionService {
                 .orElseThrow(() -> new RuntimeException("Subscription not found"));
 
         if (!subscription.getUser().getId().equals(userId)) {
-            throw new RuntimeException("Subscription does not belong to the user");
+            throw new SubscriptionConflictException("Subscription does not belong to the user");
         }
 
         subscriptionRepository.delete(subscription);
